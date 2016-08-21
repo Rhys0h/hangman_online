@@ -4,13 +4,51 @@ require 'YAML'
 
 word = choose_random_word
 hidden_word = word_attempt(word)
+rounds_remaining = 12
+guess = nil
+guessed_letters = []
+guessed_letters_string = ""
+hint = ""
 
 get '/' do
-	erb :index, :locals => {:word => word}
+	guessed_letters_string = ""
+	guessed_letters =[]
+	rounds_remaining = 12
+	word = choose_random_word
+	hidden_word = word_attempt(word)
+	erb :index, :locals => {:word => word, :hint => hint, :hidden_word => hidden_word, :rounds_remaining => rounds_remaining, :guessed_letters_string => guessed_letters_string}
 end
 
 post '/' do
-	erb :index, :locals => {:word => hidden_word}
+	guess = params['guess'].upcase[0] # captures the guess from text box
+	guessed_letters << guess
+	guessed_letters_string = guessed_letters.join(" ")
+	rounds_remaining -= 1
+	hint = ""
+	if rounds_remaining == 0 #resets game when rounds == 0
+		word = choose_random_word
+		hidden_word = word_attempt(word)
+		rounds_remaining = 12
+		guessed_letters_string = ""
+		guessed_letters =[]
+		hint = ""
+	end
+	unless (hint.include("_")) && (hint != "")
+		word = choose_random_word
+		hidden_word = word_attempt(word)
+		rounds_remaining = 12
+		guessed_letters_string = ""
+		guessed_letters =[]
+		hint = ""
+	end
+	word.each_char do |letter|
+		if guessed_letters.include? letter
+			hint << letter
+		else
+			hint << "_ "
+		end
+	end
+	erb :index, :locals => {:word => word, :hint => hint, :hidden_word => hidden_word, :rounds_remaining => rounds_remaining, :guessed_letters_string => guessed_letters_string}
 end
 
 def new_game

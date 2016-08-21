@@ -1,13 +1,31 @@
 <html>
 	<head>HANGMAN</head>
 	<body>
-		<p>The word to guess is <%= word %></p>
+		<p><%= word %></p>
+		<p>
+			<% if hint != "" %>
+				<%= hint %>
+			<% else %>
+				<%= hidden_word %>
+			<% end %>
+		</p>
+		<p>
+			<% if hint.include?("_") %>
+				You have <%= rounds_remaining %> rounds left
+			<% elsif hint != "" %>
+				You win!
+			<% else %>
+				Balls something is wrong
+			<% end %>
+		</p>
 		<form method='POST' action='/'> <!-- This send POST version of localhost:4567 with params stored in URL -->
 		  <input type='text' name='guess' />
 		  <input type='submit' value='Guess!' />
 		</form>
 		<form method='GET' action='/'> <!-- This returns user to GET version of localhost:4567/ -->
-			<input type='submit' value ='Back'>
+			<input type='submit' value ='New word'>
 		</form>
+		<p>Used letters: <%= guessed_letters_string %> </p>
+
 	</body>
 </html>
